@@ -3,8 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Progress Tracker</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Architect Dashboard</title>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD6FfQzZdeNO2svGl1lcN5p4_eVIfvO5oM",
+  authDomain: "personalprogresstracker-3ea5e.firebaseapp.com",
+  projectId: "personalprogresstracker-3ea5e",
+  storageBucket: "personalprogresstracker-3ea5e.firebasestorage.app",
+  messagingSenderId: "408574075331",
+  appId: "1:408574075331:web:69f0279ce9dab5a2619d76"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let userId;
+let state = {
+  tasks: Array.from({length:30},()=>({go:false,dsa:false,build:false})),
+  dsa:0,
+  arch:0,
+  milestones:{m1:false,m2:false,m3:false,m4:false},
+  lastActive:null,
+  streak:0
+};
+
+signInAnonymously(auth);
+
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    userId=user.uid;
+    const ref=doc(db,"users","globalUser"); 
+    onSnapshot(ref,(snap)=>{
+      if(snap.exists()){
+        state=snap.data();
+        render();
+      }else{
+        setDoc(ref,state);
+      }
+    });
+  }
+});
+
+function render(){
+  const body=document.getElementById("tableBody");
+  body.innerHTML="";
+  state.tasks.forEach((t,i)=>{
+    const complete=t.go&&t.dsa&&t.build;
+    body.innerHTML+=`
+      <tr>
+        <td>Day ${i+1}</td>
+        <td><input type="checkbox" ${t.go?"checked":""} onchange="toggle(${i},'go')"></td>
+        <td><input type="checkbox" ${t.dsa?"checked":""} onchange="toggle(${i},'dsa')"></td>
+        <td><input type="checkbox" ${t.build?"checked":""} onchange="toggle(${i},'build')"></td>
+        <td>${complete?"✅":"❌"}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("dsaTotal").innerText=state.dsa;
+  document.getElementById("archSkill").value=state.arch;
+  document.getElementById("archValue").innerText=state.arch;
+  document.getElementById("streak").innerText=state.streak;
+
+  updateProgress();
+}
+
+window.toggle=function(i,type){
+  state.tasks[i][type]=!state.tasks[i][type];
+  updateStreak();
+  save();
+}
+
+function updateStreak(){
+  const today=new Date().toDateString();
+  if(state.lastActive!==today){
+    state.streak++;
+    state.lastActive=today;
+  }
+}
+
+function updateProgress(){
+  const done=state.tasks.filter(t=>t.go&&t.dsa&&t.build).length;
+  const percent=Math.round((done/30)*100);
+  document.getElementById("progress").innerText=percent+"%";
+}
+
+window.addDSA=function(){
+  const val=parseInt(document.getElementById("dsaInput").value)||0;
+  state.dsa+=val;
+  save();
+}
+
+window.save=function(){
+  state.arch=document.getElementById("archSkill").value;
+  state.milestones.m1=document.getElementById("m1").checked;
+  state.milestones.m2=document.getElementById("m2").checked;
+  state.milestones.m3=document.getElementById("m3").checked;
+  state.milestones.m4=document.getElementById("m4").checked;
+
+  setDoc(doc(db,"users","globalUser"),state);
+}
+</script>
 
 <style>
 body{
@@ -14,52 +123,29 @@ body{
   color:white;
   padding:30px;
 }
-
-h1{text-align:center;margin-bottom:20px;}
-
+h1{text-align:center;}
 .card{
-  background:rgba(255,255,255,0.07);
+  background:rgba(255,255,255,0.08);
   backdrop-filter:blur(15px);
   padding:20px;
   border-radius:16px;
   margin-bottom:20px;
 }
-
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th,td{
-  padding:10px;
-  text-align:center;
-}
-
-th{
-  background:rgba(255,255,255,0.1);
-}
-
-tr:nth-child(even){
-  background:rgba(255,255,255,0.03);
-}
-
+table{width:100%;border-collapse:collapse;}
+th,td{padding:10px;text-align:center;}
+th{background:rgba(255,255,255,0.1);}
+tr:nth-child(even){background:rgba(255,255,255,0.05);}
 input[type=checkbox]{transform:scale(1.2);}
-button{
-  padding:8px 14px;
-  border:none;
-  border-radius:8px;
-  background:#38bdf8;
-  cursor:pointer;
-}
+button{padding:6px 12px;border:none;border-radius:8px;background:#38bdf8;color:black;}
 </style>
 </head>
 
 <body>
 
-<h1>🚀 Architect Daily Progress</h1>
+<h1>🚀 Architect Dashboard</h1>
 
 <div class="card">
-🔥 Streak: <span id="streak">0</span> days |
+🔥 Streak: <span id="streak">0</span> |
 📊 Progress: <span id="progress">0%</span>
 </div>
 
@@ -86,105 +172,17 @@ button{
 
 <div class="card">
 🏗 Architecture Level:
-<input type="range" min="0" max="100" id="archSkill" onchange="saveData()">
+<input type="range" min="0" max="100" id="archSkill" onchange="save()">
 <span id="archValue">0</span>%
 </div>
 
-<script>
-const username="ashish5369";
-const repo="dailyProgressTracker";
-const file="data.json";
-let token="";
-let data={};
-
-async function loadData(){
-  const res=await fetch(`https://api.github.com/repos/${username}/${repo}/contents/${file}`);
-  const json=await res.json();
-  const content=atob(json.content);
-  data=JSON.parse(content);
-  data.sha=json.sha;
-
-  if(data.tasks.length===0){
-    data.tasks=Array.from({length:30},()=>({go:false,dsa:false,build:false}));
-  }
-  render();
-}
-
-function render(){
-  const body=document.getElementById("tableBody");
-  body.innerHTML="";
-  data.tasks.forEach((task,i)=>{
-    const complete=task.go && task.dsa && task.build;
-    body.innerHTML+=`
-      <tr>
-        <td>Day ${i+1}</td>
-        <td><input type="checkbox" ${task.go?"checked":""} onchange="toggle(${i},'go')"></td>
-        <td><input type="checkbox" ${task.dsa?"checked":""} onchange="toggle(${i},'dsa')"></td>
-        <td><input type="checkbox" ${task.build?"checked":""} onchange="toggle(${i},'build')"></td>
-        <td>${complete?"✅":"❌"}</td>
-      </tr>
-    `;
-  });
-
-  updateProgress();
-  document.getElementById("dsaTotal").innerText=data.dsa;
-  document.getElementById("archSkill").value=data.arch||0;
-  document.getElementById("archValue").innerText=data.arch||0;
-  document.getElementById("streak").innerText=data.streak||0;
-}
-
-function toggle(i,type){
-  data.tasks[i][type]=!data.tasks[i][type];
-  const today=new Date().toDateString();
-  if(data.lastActive!==today){
-    data.streak=(data.streak||0)+1;
-    data.lastActive=today;
-  }
-  saveData();
-}
-
-function addDSA(){
-  data.dsa+=parseInt(document.getElementById("dsaInput").value)||0;
-  saveData();
-}
-
-function updateProgress(){
-  const done=data.tasks.filter(t=>t.go&&t.dsa&&t.build).length;
-  const percent=Math.round((done/30)*100);
-  document.getElementById("progress").innerText=percent+"%";
-}
-
-async function saveData(){
-  data.arch=document.getElementById("archSkill").value;
-
-  const content=btoa(JSON.stringify({
-    tasks:data.tasks,
-    dsa:data.dsa,
-    arch:data.arch,
-    milestones:data.milestones||{},
-    lastActive:data.lastActive,
-    streak:data.streak
-  },null,2));
-
-  await fetch(`https://api.github.com/repos/${username}/${repo}/contents/${file}`,{
-    method:"PUT",
-    headers:{
-      Authorization:`Bearer ${token}`,
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-      message:"Update progress",
-      content:content,
-      sha:data.sha
-    })
-  });
-
-  loadData();
-}
-
-token=prompt("Enter GitHub Token");
-loadData();
-</script>
+<div class="card">
+🏆 Milestones<br>
+<label><input type="checkbox" id="m1" onchange="save()"> Auth Service</label><br>
+<label><input type="checkbox" id="m2" onchange="save()"> Concurrency Project</label><br>
+<label><input type="checkbox" id="m3" onchange="save()"> Redis + Docker</label><br>
+<label><input type="checkbox" id="m4" onchange="save()"> Final Refactor</label>
+</div>
 
 </body>
 </html>
