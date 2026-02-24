@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architect SaaS Dashboard</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+<style>
+body {
+  margin:0;
+  font-family: Inter, sans-serif;
+  background: linear-gradient(135deg,#0f172a,#1e293b);
+  color:white;
+}
+
+.container {
+  padding:40px;
+}
+
+.card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(15px);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns: repeat(5,1fr);
+  gap:10px;
+}
+
+.day {
+  background: rgba(255,255,255,0.05);
+  padding:10px;
+  border-radius:12px;
+  text-align:center;
+}
+
+input[type=checkbox]{
+  transform: scale(1.3);
+}
+
+button{
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  background:#38bdf8;
+  color:black;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>🚀 Architect Dashboard</h1>
+
+<div class="card">
+<h3>🔥 Streak: <span id="streak">0</span> days</h3>
+<h3>📊 Progress: <span id="progress">0%</span></h3>
+</div>
+
+<div class="card">
+<h3>📅 Month 1 Tracker</h3>
+<div class="grid" id="grid"></div>
+</div>
+
+<div class="card">
+<h3>📦 Backup</h3>
+<button onclick="exportData()">Export</button>
+<input type="file" onchange="importData(event)">
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "PASTE_YOURS",
+  authDomain: "PASTE_YOURS",
+  projectId: "PASTE_YOURS",
+  storageBucket: "PASTE_YOURS",
+  messagingSenderId: "PASTE_YOURS",
+  appId: "PASTE_YOURS"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getFirestore();
+
+let userId;
+let state = {
+  tasks: Array(30).fill(false),
+  lastActive: null
+};
+
+signInAnonymously(auth).then(user => {
+  userId = user.user.uid;
+  const ref = doc(db,"users",userId);
+
+  onSnapshot(ref,(snap)=>{
+    if(snap.exists()){
+      state = snap.data();
+      render();
+    } else {
+      setDoc(ref,state);
+    }
+  });
+});
+
+function render(){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  state.tasks.forEach((val,i)=>{
+    grid.innerHTML += `
+      <div class="day">
+        <p>Day ${i+1}</p>
+        <input type="checkbox" ${val?"checked":""}
+         onchange="toggleTask(${i})">
+      </div>`;
+  });
+
+  const done = state.tasks.filter(t=>t).length;
+  document.getElementById("progress").innerText =
+   Math.round((done/30)*100)+"%";
+
+  updateStreak();
+}
+
+window.toggleTask = function(i){
+  state.tasks[i] = !state.tasks[i];
+  state.lastActive = new Date().toDateString();
+  save();
+};
+
+function save(){
+  setDoc(doc(db,"users",userId),state);
+}
+
+function updateStreak(){
+  if(!state.lastActive){
+    document.getElementById("streak").innerText = 0;
+    return;
+  }
+  const today = new Date().toDateString();
+  document.getElementById("streak").innerText =
+    state.lastActive === today ? 1 : 0;
+}
+
+window.exportData = function(){
+  const blob = new Blob([JSON.stringify(state)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "backup.json";
+  a.click();
+}
+
+window.importData = function(e){
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function(){
+    state = JSON.parse(reader.result);
+    save();
+  };
+  reader.readAsText(file);
+}
+
+</script>
+</body>
+</html>
