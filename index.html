@@ -5,12 +5,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Progress Tracker</title>
 
+<style>
+body{
+  margin:0;
+  font-family:Inter,sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:white;
+  padding:30px;
+}
+h1{text-align:center;}
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:10px;text-align:center;}
+th{background:rgba(255,255,255,0.1);}
+tr:nth-child(even){background:rgba(255,255,255,0.05);}
+input[type=checkbox]{transform:scale(1.2);}
+button{padding:6px 12px;border:none;border-radius:8px;background:#38bdf8;color:black;}
+</style>
+</head>
+
+<body>
+
+<h1>🚀 Daily Progress Tracker</h1>
+
+<div class="card">
+🔥 Streak: <span id="streak">0</span> |
+📊 Progress: <span id="progress">0%</span> |
+<button onclick="window.save()">Save Progress</button>
+</div>
+
+<div class="card">
+<table>
+<thead>
+<tr>
+<th>Day</th>
+<th>Go</th>
+<th>DSA</th>
+<th>Build</th>
+<th>Complete</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+
+<div class="card">
+🧠 DSA Total: <span id="dsaTotal">0</span>
+<input type="number" id="dsaInput">
+<button onclick="window.addDSA()">Add</button>
+</div>
+
+<div class="card">
+🏗 Architecture Level:
+<input type="range" min="0" max="100" id="archSkill" onchange="window.save()">
+<span id="archValue">0</span>%
+</div>
+
+<div class="card">
+🏆 Milestones<br>
+<label><input type="checkbox" id="m1" onchange="window.save()"> Auth Service</label><br>
+<label><input type="checkbox" id="m2" onchange="window.save()"> Concurrency Project</label><br>
+<label><input type="checkbox" id="m3" onchange="window.save()"> Redis + Docker</label><br>
+<label><input type="checkbox" id="m4" onchange="window.save()"> Final Refactor</label>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyD6FfQzZdeNO2svGl1lcN5p4_eVIfvO5oM",
   authDomain: "personalprogresstracker-3ea5e.firebaseapp.com",
@@ -19,8 +88,6 @@ const firebaseConfig = {
   messagingSenderId: "408574075331",
   appId: "1:408574075331:web:69f0279ce9dab5a2619d76"
 };
-
-// Initialize Firebase
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -59,7 +126,7 @@ const syllabus = [
     ["Full Revision", "Project Polish", "Final Review"]
 ];
 
-let state = {
+let appState = {
   tasks: Array.from({length:30},()=>({go:false,dsa:false,build:false})),
   dsa:0,
   arch:0,
@@ -68,52 +135,30 @@ let state = {
   streak:0
 };
 
-signInAnonymously(auth);
+const renderFn = () => {
+  const body = document.getElementById("tableBody");
+  body.innerHTML = "";
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        const ref = doc(db, "users", "globalUser");
+  appState.tasks.forEach((t,i) => {
+    const complete = t.go && t.dsa && t.build;
 
-        // onSnapshot will handle both initial load and subsequent updates
-        onSnapshot(ref, (snap) => {
-            if (snap.exists()) {
-                // If data exists, load it into state
-                state = snap.data();
-                render();
-            } else {
-                // If no data exists, create the initial document in Firebase
-                // onSnapshot will be triggered again once the doc is created,
-                // which will then call render()
-                setDoc(ref, state);
-            }
-        });
-    }
-});
-
-function render(){
-  const body=document.getElementById("tableBody");
-  body.innerHTML="";
-
-  state.tasks.forEach((t,i)=>{
-    const complete=t.go&&t.dsa&&t.build;
-
-    body.innerHTML+=`
+    body.innerHTML += `
       <tr>
         <td><b>Day ${i+1}</b></td>
 
         <td>
           ${syllabus[i][0]||""}<br>
-          ${syllabus[i][0]?`<input type="checkbox" ${t.go?"checked":""} onclick="toggle(${i},'go')">`:""}
+          ${syllabus[i][0]?`<input type="checkbox" ${t.go?"checked":""} onclick="window.toggle(${i},'go')">`:""}
         </td>
 
         <td>
           ${syllabus[i][1]||""}<br>
-          ${syllabus[i][1]?`<input type="checkbox" ${t.dsa?"checked":""} onclick="toggle(${i},'dsa')">`:""}
+          ${syllabus[i][1]?`<input type="checkbox" ${t.dsa?"checked":""} onclick="window.toggle(${i},'dsa')">`:""}
         </td>
 
         <td>
           ${syllabus[i][2]||""}<br>
-          ${syllabus[i][2]?`<input type="checkbox" ${t.build?"checked":""} onclick="toggle(${i},'build')">`:""}
+          ${syllabus[i][2]?`<input type="checkbox" ${t.build?"checked":""} onclick="window.toggle(${i},'build')">`:""}
         </td>
 
         <td>${complete?"✅":"❌"}</td>
@@ -122,119 +167,66 @@ function render(){
   });
 
   updateProgress();
-  document.getElementById("dsaTotal").innerText=state.dsa;
-  document.getElementById("archSkill").value=state.arch;
-  document.getElementById("archValue").innerText=state.arch;
-  document.getElementById("streak").innerText=state.streak;
-}
+  document.getElementById("dsaTotal").innerText = appState.dsa;
+  document.getElementById("archSkill").value = appState.arch;
+  document.getElementById("archValue").innerText = appState.arch;
+  document.getElementById("streak").innerText = appState.streak;
+};
 
-window.toggle=function(i,type){
-  state.tasks[i][type]=!state.tasks[i][type];
-  updateStreak();
-  save();
-}
-
-function updateStreak(){
-  const today=new Date().toDateString();
-  if(state.lastActive!==today){
-    state.streak++;
-    state.lastActive=today;
+const updateStreak = () => {
+  const today = new Date().toDateString();
+  if(appState.lastActive !== today){
+    appState.streak++;
+    appState.lastActive = today;
   }
-}
+};
 
-function updateProgress(){
-  const done=state.tasks.filter(t=>t.go&&t.dsa&&t.build).length;
-  const percent=Math.round((done/30)*100);
-  document.getElementById("progress").innerText=percent+"%";
-}
+const updateProgress = () => {
+  const done = appState.tasks.filter(t => t.go && t.dsa && t.build).length;
+  const percent = Math.round((done/30)*100);
+  document.getElementById("progress").innerText = percent + "%";
+};
 
-window.addDSA=function(){
-  const val=parseInt(document.getElementById("dsaInput").value)||0;
-  state.dsa+=val;
-  save();
-}
+window.toggle = (i, type) => {
+  appState.tasks[i][type] = !appState.tasks[i][type];
+  updateStreak();
+  window.save();
+};
 
-window.save=function(){
-  state.arch = document.getElementById("archSkill").value;
-  document.getElementById("archValue").innerText = state.arch; // Also update the label
-  state.milestones.m1=document.getElementById("m1").checked;
-  state.milestones.m2=document.getElementById("m2").checked;
-  state.milestones.m3=document.getElementById("m3").checked;
-  state.milestones.m4=document.getElementById("m4").checked;
+window.addDSA = () => {
+  const val = parseInt(document.getElementById("dsaInput").value) || 0;
+  appState.dsa += val;
+  document.getElementById("dsaInput").value = "";
+  window.save();
+};
 
-  setDoc(doc(db,"users","globalUser"),state);
-}
+window.save = () => {
+  appState.arch = document.getElementById("archSkill").value;
+  appState.milestones.m1 = document.getElementById("m1").checked;
+  appState.milestones.m2 = document.getElementById("m2").checked;
+  appState.milestones.m3 = document.getElementById("m3").checked;
+  appState.milestones.m4 = document.getElementById("m4").checked;
+  
+  setDoc(doc(db, "users", "globalUser"), appState);
+};
+
+signInAnonymously(auth);
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const ref = doc(db, "users", "globalUser");
+        onSnapshot(ref, (snap) => {
+            if (snap.exists()) {
+                appState = snap.data();
+                renderFn();
+            } else {
+                setDoc(ref, appState).then(() => {
+                    renderFn();
+                });
+            }
+        });
+    }
+});
+
+window.render = renderFn;
 </script>
-
-<style>
-body{
-  margin:0;
-  font-family:Inter,sans-serif;
-  background:linear-gradient(135deg,#0f172a,#1e293b);
-  color:white;
-  padding:30px;
-}
-h1{text-align:center;}
-.card{
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(15px);
-  padding:20px;
-  border-radius:16px;
-  margin-bottom:20px;
-}
-table{width:100%;border-collapse:collapse;}
-th,td{padding:10px;text-align:center;}
-th{background:rgba(255,255,255,0.1);}
-tr:nth-child(even){background:rgba(255,255,255,0.05);}
-input[type=checkbox]{transform:scale(1.2);}
-button{padding:6px 12px;border:none;border-radius:8px;background:#38bdf8;color:black;}
-</style>
-</head>
-
-<body>
-
-<h1>🚀 Daily Progress Tracker</h1>
-
-<div class="card">
-🔥 Streak: <span id="streak">0</span> |
-📊 Progress: <span id="progress">0%</span> |
-<button onclick="save()">Save Progress</button>
-</div>
-
-<div class="card">
-<table>
-<thead>
-<tr>
-<th>Day</th>
-<th>Go</th>
-<th>DSA</th>
-<th>Build</th>
-<th>Complete</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-</table>
-</div>
-
-<div class="card">
-🧠 DSA Total: <span id="dsaTotal">0</span>
-<input type="number" id="dsaInput">
-<button onclick="addDSA()">Add</button>
-</div>
-
-<div class="card">
-🏗 Architecture Level:
-<input type="range" min="0" max="100" id="archSkill" onchange="save()">
-<span id="archValue">0</span>%
-</div>
-
-<div class="card">
-🏆 Milestones<br>
-<label><input type="checkbox" id="m1" onchange="save()"> Auth Service</label><br>
-<label><input type="checkbox" id="m2" onchange="save()"> Concurrency Project</label><br>
-<label><input type="checkbox" id="m3" onchange="save()"> Redis + Docker</label><br>
-<label><input type="checkbox" id="m4" onchange="save()"> Final Refactor</label>
-</div>
-
-</body>
-</html>
