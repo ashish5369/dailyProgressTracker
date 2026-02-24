@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Architect Dashboard</title>
+<title>Daily Progress Tracker</title>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -32,36 +32,36 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const syllabus = [
-["Variables & Types","Big O","Programs"],
-["Slices & Maps","Two Sum","Practice"],
-["Functions","Sliding Window","Practice"],
-["Structs","Hashing","Practice"],
-["Pointers","Strings","Practice"],
-["Interfaces","Recursion","CLI App"],
-["Revision","Revision","Revision"],
-["Goroutines","Linked List","Practice"],
-["Channels","Reverse LL","Practice"],
-["Select","Stack","Practice"],
-["Mutex","Queue","Practice"],
-["Logging","Binary Search","Practice"],
-["Concurrency Build","Binary Search","File Processor"],
-["Revision","Revision","Revision"],
-["HTTP Basics","",""],
-["Gin CRUD","","API Build"],
-["Postgres","","DB Setup"],
-["Go + Postgres","","Integration"],
-["Clean Architecture","","Refactor"],
-["Auth + JWT","","Major Build"],
-["Revision","",""],
-["Redis","","Cache"],
-["Rate Limiting","","Implementation"],
-["Docker","","Containerize"],
-["Docker Compose","","Full Stack Run"],
-["Logging Upgrade","","Refactor"],
-["Final Upgrade","","Project Polish"],
-["Load Balancer","","System Design"],
-["Scaling Architecture","","Design Doc"],
-["Full Revision","",""]
+    ["Variables, Types, Setup", "Big O, Complexity", "Problem Solving"],
+    ["Arrays & Slices", "Arrays Pattern", "Problem Solving"],
+    ["Maps & Strings", "Hashing", "Problem Solving"],
+    ["Functions & Error Handling", "Sliding Window", "Problem Solving"],
+    ["Structs & Methods", "Two Pointers", "Problem Solving"],
+    ["Pointers & Memory", "Recursion", "Problem Solving"],
+    ["Revision", "Revision", "CLI Task Manager"],
+    ["Goroutines", "Linked List Basics", "Problem Solving"],
+    ["Channels & Select", "Fast & Slow Pointers", "Problem Solving"],
+    ["Mutex & Sync", "Stack", "Problem Solving"],
+    ["Interfaces & Queues", "Binary Search", "Problem Solving"],
+    ["Error Wrapping & Logging", "Monotonic Stack", "Problem Solving"],
+    ["Concurrency Project", "Pattern Review", "Concurrent File Processor"],
+    ["Revision", "Revision", "Revision"],
+    ["HTTP Deep Dive", "REST Principles", "Study"],
+    ["Basic HTTP Server (net/http)", "Middleware", "Build In-Memory Server"],
+    ["Gin Framework", "Routing, Binding", "CRUD API (in-memory)"],
+    ["PostgreSQL Basics", "ACID, Indexes", "DB Setup & Study"],
+    ["Go + Postgres", "Repository Pattern", "Integrate DB into API"],
+    ["Authentication", "JWT, Hashing", "Build Auth System"],
+    ["Clean Architecture", "SOLID", "Refactor Project"],
+    ["Redis Caching", "TTL, Eviction", "Add Cache to API"],
+    ["Docker & Docker Compose", "Containerization", "Dockerize Full Stack"],
+    ["System Design Basics", "Scaling, CAP Theorem", "Design for 1M Users"],
+    ["Message Queues", "Kafka vs RabbitMQ", "Async Architecture Design"],
+    ["Rate Limiting", "Redis Implementation", "Implement Rate Limiter"],
+    ["Logging & Monitoring", "Observability", "Study"],
+    ["Scalable System Redesign", "Architecture Diagram", "Draw Full Architecture"],
+    ["Mock System Design Interview", "Common Problems", "Design URL Shortener"],
+    ["Full Revision", "Project Polish", "Final Review"]
 ];
 
 let state = {
