@@ -3,179 +3,188 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Architect SaaS Dashboard</title>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+<title>Daily Progress Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body {
+body{
   margin:0;
-  font-family: Inter, sans-serif;
-  background: linear-gradient(135deg,#0f172a,#1e293b);
+  font-family:Inter,sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
   color:white;
+  padding:30px;
 }
 
-.container {
-  padding:40px;
-}
+h1{text-align:center;margin-bottom:20px;}
 
-.card {
-  background: rgba(255,255,255,0.07);
-  backdrop-filter: blur(15px);
-  border-radius:16px;
+.card{
+  background:rgba(255,255,255,0.07);
+  backdrop-filter:blur(15px);
   padding:20px;
+  border-radius:16px;
   margin-bottom:20px;
 }
 
-.grid {
-  display:grid;
-  grid-template-columns: repeat(5,1fr);
-  gap:10px;
+table{
+  width:100%;
+  border-collapse:collapse;
 }
 
-.day {
-  background: rgba(255,255,255,0.05);
+th,td{
   padding:10px;
-  border-radius:12px;
   text-align:center;
 }
 
-input[type=checkbox]{
-  transform: scale(1.3);
+th{
+  background:rgba(255,255,255,0.1);
 }
 
+tr:nth-child(even){
+  background:rgba(255,255,255,0.03);
+}
+
+input[type=checkbox]{transform:scale(1.2);}
 button{
   padding:8px 14px;
   border:none;
   border-radius:8px;
-  cursor:pointer;
   background:#38bdf8;
-  color:black;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
 
-<h1>🚀 Architect Dashboard</h1>
-
-<div class="card">
-<h3>🔥 Streak: <span id="streak">0</span> days</h3>
-<h3>📊 Progress: <span id="progress">0%</span></h3>
-</div>
+<h1>🚀 Architect Daily Progress</h1>
 
 <div class="card">
-<h3>📅 Month 1 Tracker</h3>
-<div class="grid" id="grid"></div>
+🔥 Streak: <span id="streak">0</span> days |
+📊 Progress: <span id="progress">0%</span>
 </div>
 
 <div class="card">
-<h3>📦 Backup</h3>
-<button onclick="exportData()">Export</button>
-<input type="file" onchange="importData(event)">
+<table>
+<thead>
+<tr>
+<th>Day</th>
+<th>Go</th>
+<th>DSA</th>
+<th>Build</th>
+<th>Complete</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
 </div>
 
+<div class="card">
+🧠 DSA Total: <span id="dsaTotal">0</span>
+<input type="number" id="dsaInput">
+<button onclick="addDSA()">Add</button>
 </div>
 
-<script type="module">
+<div class="card">
+🏗 Architecture Level:
+<input type="range" min="0" max="100" id="archSkill" onchange="saveData()">
+<span id="archValue">0</span>%
+</div>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<script>
+const username="ashish5369";
+const repo="dailyProgressTracker";
+const file="data.json";
+let token="";
+let data={};
 
-const firebaseConfig = {
-  apiKey: "PASTE_YOURS",
-  authDomain: "PASTE_YOURS",
-  projectId: "PASTE_YOURS",
-  storageBucket: "PASTE_YOURS",
-  messagingSenderId: "PASTE_YOURS",
-  appId: "PASTE_YOURS"
-};
+async function loadData(){
+  const res=await fetch(`https://api.github.com/repos/${username}/${repo}/contents/${file}`);
+  const json=await res.json();
+  const content=atob(json.content);
+  data=JSON.parse(content);
+  data.sha=json.sha;
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
-
-let userId;
-let state = {
-  tasks: Array(30).fill(false),
-  lastActive: null
-};
-
-signInAnonymously(auth).then(user => {
-  userId = user.user.uid;
-  const ref = doc(db,"users",userId);
-
-  onSnapshot(ref,(snap)=>{
-    if(snap.exists()){
-      state = snap.data();
-      render();
-    } else {
-      setDoc(ref,state);
-    }
-  });
-});
+  if(data.tasks.length===0){
+    data.tasks=Array.from({length:30},()=>({go:false,dsa:false,build:false}));
+  }
+  render();
+}
 
 function render(){
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-  state.tasks.forEach((val,i)=>{
-    grid.innerHTML += `
-      <div class="day">
-        <p>Day ${i+1}</p>
-        <input type="checkbox" ${val?"checked":""}
-         onchange="toggleTask(${i})">
-      </div>`;
+  const body=document.getElementById("tableBody");
+  body.innerHTML="";
+  data.tasks.forEach((task,i)=>{
+    const complete=task.go && task.dsa && task.build;
+    body.innerHTML+=`
+      <tr>
+        <td>Day ${i+1}</td>
+        <td><input type="checkbox" ${task.go?"checked":""} onchange="toggle(${i},'go')"></td>
+        <td><input type="checkbox" ${task.dsa?"checked":""} onchange="toggle(${i},'dsa')"></td>
+        <td><input type="checkbox" ${task.build?"checked":""} onchange="toggle(${i},'build')"></td>
+        <td>${complete?"✅":"❌"}</td>
+      </tr>
+    `;
   });
 
-  const done = state.tasks.filter(t=>t).length;
-  document.getElementById("progress").innerText =
-   Math.round((done/30)*100)+"%";
-
-  updateStreak();
+  updateProgress();
+  document.getElementById("dsaTotal").innerText=data.dsa;
+  document.getElementById("archSkill").value=data.arch||0;
+  document.getElementById("archValue").innerText=data.arch||0;
+  document.getElementById("streak").innerText=data.streak||0;
 }
 
-window.toggleTask = function(i){
-  state.tasks[i] = !state.tasks[i];
-  state.lastActive = new Date().toDateString();
-  save();
-};
-
-function save(){
-  setDoc(doc(db,"users",userId),state);
-}
-
-function updateStreak(){
-  if(!state.lastActive){
-    document.getElementById("streak").innerText = 0;
-    return;
+function toggle(i,type){
+  data.tasks[i][type]=!data.tasks[i][type];
+  const today=new Date().toDateString();
+  if(data.lastActive!==today){
+    data.streak=(data.streak||0)+1;
+    data.lastActive=today;
   }
-  const today = new Date().toDateString();
-  document.getElementById("streak").innerText =
-    state.lastActive === today ? 1 : 0;
+  saveData();
 }
 
-window.exportData = function(){
-  const blob = new Blob([JSON.stringify(state)],{type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "backup.json";
-  a.click();
+function addDSA(){
+  data.dsa+=parseInt(document.getElementById("dsaInput").value)||0;
+  saveData();
 }
 
-window.importData = function(e){
-  const file = e.target.files[0];
-  const reader = new FileReader();
-  reader.onload = function(){
-    state = JSON.parse(reader.result);
-    save();
-  };
-  reader.readAsText(file);
+function updateProgress(){
+  const done=data.tasks.filter(t=>t.go&&t.dsa&&t.build).length;
+  const percent=Math.round((done/30)*100);
+  document.getElementById("progress").innerText=percent+"%";
 }
 
+async function saveData(){
+  data.arch=document.getElementById("archSkill").value;
+
+  const content=btoa(JSON.stringify({
+    tasks:data.tasks,
+    dsa:data.dsa,
+    arch:data.arch,
+    milestones:data.milestones||{},
+    lastActive:data.lastActive,
+    streak:data.streak
+  },null,2));
+
+  await fetch(`https://api.github.com/repos/${username}/${repo}/contents/${file}`,{
+    method:"PUT",
+    headers:{
+      Authorization:`Bearer ${token}`,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      message:"Update progress",
+      content:content,
+      sha:data.sha
+    })
+  });
+
+  loadData();
+}
+
+token=prompt("Enter GitHub Token");
+loadData();
 </script>
+
 </body>
 </html>
