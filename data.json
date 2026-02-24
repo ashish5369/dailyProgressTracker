@@ -1,7 +1,7 @@
 {
   "tasks": [
     {
-      "go": false,
+      "go": true,
       "dsa": false,
       "build": true
     },
