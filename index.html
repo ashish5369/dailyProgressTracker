@@ -37,6 +37,7 @@ button{padding:6px 12px;border:none;border-radius:8px;background:#38bdf8;color:b
 <div class="card">
 🔥 Streak: <span id="streak">0</span> |
 📊 Progress: <span id="progress">0%</span> |
+<button onclick="window.loadFromGitHub()">Load Progress</button>
 <button onclick="window.save()">Save Progress</button>
 </div>
 
@@ -76,23 +77,6 @@ button{padding:6px 12px;border:none;border-radius:8px;background:#38bdf8;color:b
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyD6FfQzZdeNO2svGl1lcN5p4_eVIfvO5oM",
-  authDomain: "personalprogresstracker-3ea5e.firebaseapp.com",
-  projectId: "personalprogresstracker-3ea5e",
-  storageBucket: "personalprogresstracker-3ea5e.firebasestorage.app",
-  messagingSenderId: "408574075331",
-  appId: "1:408574075331:web:69f0279ce9dab5a2619d76"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
 const syllabus = [
     ["Variables, Types, Setup", "Big O, Complexity", "Problem Solving"],
     ["Arrays & Slices", "Arrays Pattern", "Problem Solving"],
@@ -134,6 +118,17 @@ let appState = {
   lastActive:null,
   streak:0
 };
+
+// GitHub configuration
+const GITHUB_CONFIG = {
+  owner: "aashish5369", // Change this to your GitHub username
+  repo: "dailyProgressTracker", // Change this to your repo name
+  file: "progress.json",
+  branch: "main"
+};
+
+// Add your GitHub Personal Access Token here (personal use only)
+let githubToken = "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"; // Replace with your token from https://github.com/settings/tokens
 
 const renderFn = () => {
   const body = document.getElementById("tableBody");
@@ -187,6 +182,27 @@ const updateProgress = () => {
   document.getElementById("progress").innerText = percent + "%";
 };
 
+window.loadFromGitHub = async () => {
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.file}`;
+    const response = await fetch(url, {
+      headers: githubToken ? { "Authorization": `token ${githubToken}` } : {}
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      const content = JSON.parse(atob(data.content));
+      appState = content;
+      renderFn();
+      return true;
+    }
+  } catch (e) {
+    console.log("Could not load from GitHub:", e.message);
+  }
+  renderFn();
+  return false;
+};
+
 window.toggle = (i, type) => {
   appState.tasks[i][type] = !appState.tasks[i][type];
   updateStreak();
@@ -200,33 +216,78 @@ window.addDSA = () => {
   window.save();
 };
 
-window.save = () => {
+window.save = async () => {
   appState.arch = document.getElementById("archSkill").value;
   appState.milestones.m1 = document.getElementById("m1").checked;
   appState.milestones.m2 = document.getElementById("m2").checked;
   appState.milestones.m3 = document.getElementById("m3").checked;
   appState.milestones.m4 = document.getElementById("m4").checked;
-  
-  setDoc(doc(db, "users", "globalUser"), appState);
+
+  if (!githubToken) {
+    alert("Please set your GitHub token first by clicking 'Setup GitHub'");
+    return;
+  }
+
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.file}`;
+    
+    // First, get the current file to get its SHA
+    let sha = null;
+    try {
+      const getResponse = await fetch(url, {
+        headers: { "Authorization": `token ${githubToken}` }
+      });
+      if (getResponse.ok) {
+        const fileData = await getResponse.json();
+        sha = fileData.sha;
+      }
+    } catch (e) {
+      console.log("File doesn't exist yet, will create new");
+    }
+
+    const content = btoa(JSON.stringify(appState, null, 2));
+    const payload = {
+      message: `Update progress - ${new Date().toLocaleString()}`,
+      content: content,
+      branch: GITHUB_CONFIG.branch
+    };
+
+    if (sha) {
+      payload.sha = sha;
+    }
+
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${githubToken}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      console.log("Progress saved to GitHub successfully!");
+    } else {
+      const errorData = await response.json();
+      alert(`Error saving to GitHub: ${errorData.message}`);
+    }
+  } catch (e) {
+    alert(`Error: ${e.message}`);
+  }
 };
 
-signInAnonymously(auth);
-
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        const ref = doc(db, "users", "globalUser");
-        onSnapshot(ref, (snap) => {
-            if (snap.exists()) {
-                appState = snap.data();
-                renderFn();
-            } else {
-                setDoc(ref, appState).then(() => {
-                    renderFn();
-                });
-            }
-        });
-    }
-});
+window.setupGithub = () => {
+  githubToken = prompt("Paste your GitHub token here (it will be saved in the code for future use):");
+  
+  if (githubToken && githubToken !== "YOUR_GITHUB_TOKEN_HERE") {
+    alert("Token saved! Make sure to update the githubToken variable in the HTML for this to persist.");
+  }
+};
 
 window.render = renderFn;
+
+// Load data on page load
+window.addEventListener("load", () => {
+  window.loadFromGitHub();
+});
 </script>
