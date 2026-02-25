@@ -3,183 +3,763 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Progress Tracker</title>
+<title>Progress Tracker Dashboard</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Inter,sans-serif;
-  background:linear-gradient(135deg,#0f172a,#1e293b);
-  color:white;
-  padding:30px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-h1{text-align:center;}
-.card{
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(15px);
-  padding:20px;
-  border-radius:16px;
-  margin-bottom:20px;
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
 }
-table{width:100%;border-collapse:collapse;}
-th,td{padding:10px;text-align:center;}
-th{background:rgba(255,255,255,0.1);}
-tr:nth-child(even){background:rgba(255,255,255,0.05);}
-input[type=checkbox]{transform:scale(1.2);}
-button{padding:6px 12px;border:none;border-radius:8px;background:#38bdf8;color:black;}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+header {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 28px;
+  color: #333;
+  font-weight: 600;
+}
+
+.header-stats {
+  display: flex;
+  gap: 30px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  padding: 25px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+#selectedDate {
+  padding: 10px 15px;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background: white;
+  cursor: pointer;
+}
+
+.calendar {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-header button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.calendar-header h3 {
+  font-size: 14px;
+  color: #333;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.calendar-day:hover {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.calendar-day.today {
+  background: rgba(102, 126, 234, 0.18);
+  color: #4a5bdc;
+  border-color: rgba(102, 126, 234, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.25);
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+}
+
+.calendar-day.selected {
+  background: #764ba2;
+  color: white;
+  border-color: #764ba2;
+}
+
+.calendar-day.today.selected {
+  background: #5b6fe6;
+  color: white;
+  border-color: #5b6fe6;
+  box-shadow: 0 6px 14px rgba(91, 111, 230, 0.35);
+}
+
+.calendar-day.completed {
+  background: #22c55e;
+  color: white;
+  border-color: #22c55e;
+}
+
+.calendar-day.completed.selected {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.topics-section {
+  margin-bottom: 25px;
+}
+
+.topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.topic-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.topic-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.topic-item label {
+  flex: 1;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.topic-item .remove-btn {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.add-topic {
+  display: flex;
+  gap: 10px;
+}
+
+.add-topic input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.add-topic button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.stat-box {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.stat-box-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.stat-box-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.progress-section {
+  flex: 1;
+}
+
+.progress-bar {
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width 0.3s;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.action-buttons button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: #f0f4ff;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.btn-secondary:hover {
+  background: #667eea;
+  color: white;
+}
+
+.completion-status {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #f0f4ff;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.status-icon {
+  font-size: 32px;
+}
+
+.status-text {
+  flex: 1;
+}
+
+.status-text h3 {
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.status-text p {
+  color: #666;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+
+  header {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .header-stats {
+    width: 100%;
+    justify-content: space-around;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<h1>🚀 Daily Progress Tracker</h1>
+<div class="container">
+  <header>
+    <h1>📊 Progress Tracker Dashboard</h1>
+    <div class="header-stats">
+      <div class="stat">
+        <div class="stat-value" id="headerStreak">0</div>
+        <div class="stat-label">🔥 Streak</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="headerProgress">0%</div>
+        <div class="stat-label">📈 Progress</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="headerCompleted">0</div>
+        <div class="stat-label">✅ Completed</div>
+      </div>
+    </div>
+  </header>
 
-<div class="card">
-🔥 Streak: <span id="streak">0</span> |
-📊 Progress: <span id="progress">0%</span> |
-<button onclick="window.loadFromGitHub()">Load Progress</button>
-<button onclick="window.save()">Save Progress</button>
-</div>
+  <div class="main-content">
+    <!-- Left Sidebar -->
+    <div>
+      <div class="card">
+        <div class="card-title">📅 Date Selector</div>
+        
+        <div class="calendar">
+          <div class="calendar-header">
+            <button onclick="window.previousMonth()">← Prev</button>
+            <h3 id="monthYear"></h3>
+            <button onclick="window.nextMonth()">Next →</button>
+          </div>
+          <div class="calendar-days" id="calendarDays"></div>
+        </div>
 
-<div class="card">
-<table>
-<thead>
-<tr>
-<th>Day</th>
-<th>Go</th>
-<th>DSA</th>
-<th>Build</th>
-<th>Complete</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-</table>
-</div>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <strong>Selected:</strong> <span id="selectedDate" style="color: #667eea;"></span>
+        </div>
 
-<div class="card">
-🧠 DSA Total: <span id="dsaTotal">0</span>
-<input type="number" id="dsaInput">
-<button onclick="window.addDSA()">Add</button>
-</div>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="window.loadFromGitHub()">🔄 Load</button>
+          <button class="btn-primary" onclick="window.save()">💾 Save</button>
+        </div>
+      </div>
 
-<div class="card">
-🏗 Architecture Level:
-<input type="range" min="0" max="100" id="archSkill" onchange="window.save()">
-<span id="archValue">0</span>%
-</div>
+      <div class="card" style="margin-top: 20px;">
+        <div class="card-title">📊 Statistics</div>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-box-value" id="totalDays">0</div>
+            <div class="stat-box-label">Days Tracked</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-value" id="completionRate">0%</div>
+            <div class="stat-box-label">Completion</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="card">
-🏆 Milestones<br>
-<label><input type="checkbox" id="m1" onchange="window.save()"> Auth Service</label><br>
-<label><input type="checkbox" id="m2" onchange="window.save()"> Concurrency Project</label><br>
-<label><input type="checkbox" id="m3" onchange="window.save()"> Redis + Docker</label><br>
-<label><input type="checkbox" id="m4" onchange="window.save()"> Final Refactor</label>
+    <!-- Main Content -->
+    <div class="progress-section">
+      <div class="card">
+        <div class="card-title" id="tasksTitle">🎯 Tasks for Today</div>
+        
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="completion-status" id="completionStatus">
+          <div class="status-icon">⏳</div>
+          <div class="status-text">
+            <h3>In Progress</h3>
+            <p>Complete all tasks to finish the day</p>
+          </div>
+        </div>
+
+        <!-- Topics Section -->
+        <div class="topics-section">
+          <div class="card-title" id="topicsTitle">Tasks for Today</div>
+          <div class="topics-list" id="topicsList"></div>
+          
+          <div class="add-topic">
+            <input type="text" id="newTopicInput" placeholder="Add new task...">
+            <button onclick="window.addTopic()">+ Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="module">
-const syllabus = [
-    ["Variables, Types, Setup", "Big O, Complexity", "Problem Solving"],
-    ["Arrays & Slices", "Arrays Pattern", "Problem Solving"],
-    ["Maps & Strings", "Hashing", "Problem Solving"],
-    ["Functions & Error Handling", "Sliding Window", "Problem Solving"],
-    ["Structs & Methods", "Two Pointers", "Problem Solving"],
-    ["Pointers & Memory", "Recursion", "Problem Solving"],
-    ["Revision", "Revision", "CLI Task Manager"],
-    ["Goroutines", "Linked List Basics", "Problem Solving"],
-    ["Channels & Select", "Fast & Slow Pointers", "Problem Solving"],
-    ["Mutex & Sync", "Stack", "Problem Solving"],
-    ["Interfaces & Queues", "Binary Search", "Problem Solving"],
-    ["Error Wrapping & Logging", "Monotonic Stack", "Problem Solving"],
-    ["Concurrency Project", "Pattern Review", "Concurrent File Processor"],
-    ["Revision", "Revision", "Revision"],
-    ["HTTP Deep Dive", "REST Principles", "Study"],
-    ["Basic HTTP Server (net/http)", "Middleware", "Build In-Memory Server"],
-    ["Gin Framework", "Routing, Binding", "CRUD API (in-memory)"],
-    ["PostgreSQL Basics", "ACID, Indexes", "DB Setup & Study"],
-    ["Go + Postgres", "Repository Pattern", "Integrate DB into API"],
-    ["Authentication", "JWT, Hashing", "Build Auth System"],
-    ["Clean Architecture", "SOLID", "Refactor Project"],
-    ["Redis Caching", "TTL, Eviction", "Add Cache to API"],
-    ["Docker & Docker Compose", "Containerization", "Dockerize Full Stack"],
-    ["System Design Basics", "Scaling, CAP Theorem", "Design for 1M Users"],
-    ["Message Queues", "Kafka vs RabbitMQ", "Async Architecture Design"],
-    ["Rate Limiting", "Redis Implementation", "Implement Rate Limiter"],
-    ["Logging & Monitoring", "Observability", "Study"],
-    ["Scalable System Redesign", "Architecture Diagram", "Draw Full Architecture"],
-    ["Mock System Design Interview", "Common Problems", "Design URL Shortener"],
-    ["Full Revision", "Project Polish", "Final Review"]
-];
-
-let appState = {
-  tasks: Array.from({length:30},()=>({go:false,dsa:false,build:false})),
-  dsa:0,
-  arch:0,
-  milestones:{m1:false,m2:false,m3:false,m4:false},
-  lastActive:null,
-  streak:0
-};
-
-// GitHub configuration
 const GITHUB_CONFIG = {
-  owner: "aashish5369", // Change this to your GitHub username
-  repo: "dailyProgressTracker", // Change this to your repo name
+  owner: "aashish5369",
+  repo: "dailyProgressTracker",
   file: "progress.json",
   branch: "main"
 };
 
-// Add your GitHub Personal Access Token here (personal use only)
-let githubToken = "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"; // Replace with your token from https://github.com/settings/tokens
+let githubToken = "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";
 
-const renderFn = () => {
-  const body = document.getElementById("tableBody");
-  body.innerHTML = "";
+const ROADMAP = [
+  ["Variables, Types, Setup", "Big O, Complexity", "Problem Solving"],
+  ["Arrays & Slices", "Arrays Pattern", "Problem Solving"],
+  ["Maps & Strings", "Hashing", "Problem Solving"],
+  ["Functions & Error Handling", "Sliding Window", "Problem Solving"],
+  ["Structs & Methods", "Two Pointers", "Problem Solving"],
+  ["Pointers & Memory", "Recursion", "Problem Solving"],
+  ["Revision", "Revision", "CLI Task Manager"],
+  ["Goroutines", "Linked List Basics", "Problem Solving"],
+  ["Channels & Select", "Fast & Slow Pointers", "Problem Solving"],
+  ["Mutex & Sync", "Stack", "Problem Solving"],
+  ["Interfaces & Queues", "Binary Search", "Problem Solving"],
+  ["Error Wrapping & Logging", "Monotonic Stack", "Problem Solving"],
+  ["Concurrency Project", "Pattern Review", "Concurrent File Processor"],
+  ["Revision", "Revision", "Revision"],
+  ["HTTP Deep Dive", "REST Principles", "Study"],
+  ["Basic HTTP Server (net/http)", "Middleware", "Build In-Memory Server"],
+  ["Gin Framework", "Routing, Binding", "CRUD API (in-memory)"],
+  ["PostgreSQL Basics", "ACID, Indexes", "DB Setup & Study"],
+  ["Go + Postgres", "Repository Pattern", "Integrate DB into API"],
+  ["Authentication", "JWT, Hashing", "Build Auth System"],
+  ["Clean Architecture", "SOLID", "Refactor Project"],
+  ["Redis Caching", "TTL, Eviction", "Add Cache to API"],
+  ["Docker & Docker Compose", "Containerization", "Dockerize Full Stack"],
+  ["System Design Basics", "Scaling, CAP Theorem", "Design for 1M Users"],
+  ["Message Queues", "Kafka vs RabbitMQ", "Async Architecture Design"],
+  ["Rate Limiting", "Redis Implementation", "Implement Rate Limiter"],
+  ["Logging & Monitoring", "Observability", "Study"],
+  ["Scalable System Redesign", "Architecture Diagram", "Draw Full Architecture"],
+  ["Mock System Design Interview", "Common Problems", "Design URL Shortener"],
+  ["Full Revision", "Project Polish", "Final Review"]
+];
 
-  appState.tasks.forEach((t,i) => {
-    const complete = t.go && t.dsa && t.build;
-
-    body.innerHTML += `
-      <tr>
-        <td><b>Day ${i+1}</b></td>
-
-        <td>
-          ${syllabus[i][0]||""}<br>
-          ${syllabus[i][0]?`<input type="checkbox" ${t.go?"checked":""} onclick="window.toggle(${i},'go')">`:""}
-        </td>
-
-        <td>
-          ${syllabus[i][1]||""}<br>
-          ${syllabus[i][1]?`<input type="checkbox" ${t.dsa?"checked":""} onclick="window.toggle(${i},'dsa')">`:""}
-        </td>
-
-        <td>
-          ${syllabus[i][2]||""}<br>
-          ${syllabus[i][2]?`<input type="checkbox" ${t.build?"checked":""} onclick="window.toggle(${i},'build')">`:""}
-        </td>
-
-        <td>${complete?"✅":"❌"}</td>
-      </tr>
-    `;
-  });
-
-  updateProgress();
-  document.getElementById("dsaTotal").innerText = appState.dsa;
-  document.getElementById("archSkill").value = appState.arch;
-  document.getElementById("archValue").innerText = appState.arch;
-  document.getElementById("streak").innerText = appState.streak;
+let appState = {
+  data: {},
+  streak: 0,
+  lastActive: null,
+  roadmapStart: null
 };
 
-const updateStreak = () => {
-  const today = new Date().toDateString();
-  if(appState.lastActive !== today){
-    appState.streak++;
-    appState.lastActive = today;
+let currentDate = new Date();
+let currentViewMonth = new Date();
+
+const getDateKey = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const getTodayKey = () => {
+  return getDateKey(new Date());
+};
+
+const getRoadmapIndex = (dateKey) => {
+  if (!appState.roadmapStart) return -1;
+  const startDate = new Date(appState.roadmapStart + "T00:00:00");
+  const targetDate = new Date(dateKey + "T00:00:00");
+  const diffDays = Math.floor((targetDate - startDate) / 86400000);
+  return diffDays >= 0 && diffDays < ROADMAP.length ? diffDays : -1;
+};
+
+const ensureRoadmapSeeded = () => {
+  if (!appState.roadmapStart) {
+    appState.roadmapStart = getTodayKey();
+  }
+
+  const startDate = new Date(appState.roadmapStart + "T00:00:00");
+  for (let i = 0; i < ROADMAP.length; i += 1) {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
+    const dateKey = getDateKey(date);
+
+    if (!appState.data[dateKey]) {
+      appState.data[dateKey] = {
+        topics: [...ROADMAP[i]],
+        tasks: {}
+      };
+      appState.data[dateKey].topics.forEach((topic) => {
+        appState.data[dateKey].tasks[topic] = false;
+      });
+    }
   }
 };
 
-const updateProgress = () => {
-  const done = appState.tasks.filter(t => t.go && t.dsa && t.build).length;
-  const percent = Math.round((done/30)*100);
-  document.getElementById("progress").innerText = percent + "%";
+const initializeDate = (dateKey) => {
+  if (appState.data[dateKey]) return;
+
+  const roadmapIndex = getRoadmapIndex(dateKey);
+  const topics = roadmapIndex >= 0
+    ? ROADMAP[roadmapIndex]
+    : ["General Study", "DSA Practice", "Build Project"];
+
+  appState.data[dateKey] = {
+    topics: [...topics],
+    tasks: {}
+  };
+
+  appState.data[dateKey].topics.forEach((topic) => {
+    appState.data[dateKey].tasks[topic] = false;
+  });
+};
+
+const isDateCompleted = (dateKey) => {
+  const dayData = appState.data[dateKey];
+  if (!dayData || !dayData.topics.length) return false;
+  return dayData.topics.every((topic) => dayData.tasks[topic]);
+};
+
+const renderCalendar = () => {
+  const year = currentViewMonth.getFullYear();
+  const month = currentViewMonth.getMonth();
+  
+  document.getElementById("monthYear").textContent = 
+    currentViewMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const daysInMonth = lastDay.getDate();
+  const startingDayOfWeek = firstDay.getDay();
+
+  const calendarDays = document.getElementById("calendarDays");
+  calendarDays.innerHTML = "";
+
+  for (let i = 0; i < startingDayOfWeek; i++) {
+    calendarDays.innerHTML += '<div style="background: #f8f9fa;"></div>';
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const dateKey = getDateKey(date);
+    const isToday = dateKey === getTodayKey();
+    const isSelected = dateKey === getDateKey(currentDate);
+    const isCompleted = isDateCompleted(dateKey);
+
+    let classes = "calendar-day";
+    if (isToday) classes += " today";
+    if (isSelected) classes += " selected";
+    if (isCompleted) classes += " completed";
+
+    calendarDays.innerHTML += `
+      <div class="${classes}" onclick="window.selectDate(new Date(${year}, ${month}, ${day}))">
+        ${day}
+      </div>
+    `;
+  }
+};
+
+window.selectDate = (date) => {
+  currentDate = new Date(date);
+  initializeDate(getDateKey(currentDate));
+  const formattedDate = currentDate.toLocaleDateString('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+  document.getElementById("selectedDate").textContent = formattedDate;
+  document.getElementById("tasksTitle").textContent = `🎯 Tasks for ${formattedDate}`;
+  document.getElementById("topicsTitle").textContent = `Tasks for ${formattedDate}`;
+  renderCalendar();
+  renderTopics();
+  updateStats();
+};
+
+window.previousMonth = () => {
+  currentViewMonth.setMonth(currentViewMonth.getMonth() - 1);
+  renderCalendar();
+};
+
+window.nextMonth = () => {
+  currentViewMonth.setMonth(currentViewMonth.getMonth() + 1);
+  renderCalendar();
+};
+
+const renderTopics = () => {
+  const dateKey = getDateKey(currentDate);
+  const dayData = appState.data[dateKey];
+  
+  if (!dayData) return;
+
+  const topicsList = document.getElementById("topicsList");
+  topicsList.innerHTML = "";
+
+  dayData.topics.forEach((topic, idx) => {
+    const isChecked = dayData.tasks[topic] || false;
+    topicsList.innerHTML += `
+      <div class="topic-item">
+        <input type="checkbox" 
+          ${isChecked ? 'checked' : ''} 
+          onchange="window.toggleTask('${topic}')">
+        <label>${topic}</label>
+        <button class="remove-btn" onclick="window.removeTopic(${idx})">Remove</button>
+      </div>
+    `;
+  });
+
+  updateStats();
+};
+
+window.toggleTask = (topic) => {
+  const dateKey = getDateKey(currentDate);
+  appState.data[dateKey].tasks[topic] = !appState.data[dateKey].tasks[topic];
+  updateStats();
+};
+
+window.addTopic = () => {
+  const input = document.getElementById("newTopicInput");
+  const topic = input.value.trim();
+  
+  if (topic) {
+    const dateKey = getDateKey(currentDate);
+    appState.data[dateKey].topics.push(topic);
+    appState.data[dateKey].tasks[topic] = false;
+    input.value = "";
+    renderTopics();
+    window.save();
+  }
+};
+
+window.removeTopic = (idx) => {
+  const dateKey = getDateKey(currentDate);
+  const topic = appState.data[dateKey].topics[idx];
+  appState.data[dateKey].topics.splice(idx, 1);
+  delete appState.data[dateKey].tasks[topic];
+  renderTopics();
+  window.save();
+};
+
+const updateStats = () => {
+  const dateKey = getDateKey(currentDate);
+  const dayData = appState.data[dateKey];
+  
+  if (!dayData) return;
+
+  const totalTasks = dayData.topics.length;
+  const completedTasks = dayData.topics.filter(t => dayData.tasks[t]).length;
+  const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  document.getElementById("progressFill").style.width = percentage + "%";
+  document.getElementById("headerProgress").textContent = percentage + "%";
+  document.getElementById("headerCompleted").textContent = completedTasks;
+
+  const totalDays = Object.keys(appState.data).length;
+  document.getElementById("totalDays").textContent = totalDays;
+  document.getElementById("completionRate").textContent = 
+    totalDays > 0 ? Math.round((Object.values(appState.data).filter(d => 
+      d.topics.every(t => d.tasks[t])).length / totalDays) * 100) + "%" : "0%";
+
+  const status = document.getElementById("completionStatus");
+  if (completedTasks === totalTasks && totalTasks > 0) {
+    status.innerHTML = `
+      <div class="status-icon">✅</div>
+      <div class="status-text">
+        <h3>Completed!</h3>
+        <p>Great job! All tasks done for today.</p>
+      </div>
+    `;
+  } else {
+    status.innerHTML = `
+      <div class="status-icon">⏳</div>
+      <div class="status-text">
+        <h3>In Progress</h3>
+        <p>${completedTasks} of ${totalTasks} tasks completed</p>
+      </div>
+    `;
+  }
 };
 
 window.loadFromGitHub = async () => {
@@ -193,45 +773,19 @@ window.loadFromGitHub = async () => {
       const data = await response.json();
       const content = JSON.parse(atob(data.content));
       appState = content;
-      renderFn();
-      return true;
+      ensureRoadmapSeeded();
+      selectDate(new Date());
+      alert("✅ Data loaded from GitHub!");
     }
   } catch (e) {
     console.log("Could not load from GitHub:", e.message);
   }
-  renderFn();
-  return false;
-};
-
-window.toggle = (i, type) => {
-  appState.tasks[i][type] = !appState.tasks[i][type];
-  updateStreak();
-  window.save();
-};
-
-window.addDSA = () => {
-  const val = parseInt(document.getElementById("dsaInput").value) || 0;
-  appState.dsa += val;
-  document.getElementById("dsaInput").value = "";
-  window.save();
 };
 
 window.save = async () => {
-  appState.arch = document.getElementById("archSkill").value;
-  appState.milestones.m1 = document.getElementById("m1").checked;
-  appState.milestones.m2 = document.getElementById("m2").checked;
-  appState.milestones.m3 = document.getElementById("m3").checked;
-  appState.milestones.m4 = document.getElementById("m4").checked;
-
-  if (!githubToken) {
-    alert("Please set your GitHub token first by clicking 'Setup GitHub'");
-    return;
-  }
-
   try {
     const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.file}`;
     
-    // First, get the current file to get its SHA
     let sha = null;
     try {
       const getResponse = await fetch(url, {
@@ -242,7 +796,7 @@ window.save = async () => {
         sha = fileData.sha;
       }
     } catch (e) {
-      console.log("File doesn't exist yet, will create new");
+      console.log("File doesn't exist yet, creating new");
     }
 
     const content = btoa(JSON.stringify(appState, null, 2));
@@ -252,9 +806,7 @@ window.save = async () => {
       branch: GITHUB_CONFIG.branch
     };
 
-    if (sha) {
-      payload.sha = sha;
-    }
+    if (sha) payload.sha = sha;
 
     const response = await fetch(url, {
       method: "PUT",
@@ -266,28 +818,21 @@ window.save = async () => {
     });
 
     if (response.ok) {
-      console.log("Progress saved to GitHub successfully!");
-    } else {
-      const errorData = await response.json();
-      alert(`Error saving to GitHub: ${errorData.message}`);
+      console.log("Progress saved to GitHub!");
+      alert("✅ Progress saved to GitHub!");
     }
   } catch (e) {
     alert(`Error: ${e.message}`);
   }
 };
 
-window.setupGithub = () => {
-  githubToken = prompt("Paste your GitHub token here (it will be saved in the code for future use):");
-  
-  if (githubToken && githubToken !== "YOUR_GITHUB_TOKEN_HERE") {
-    alert("Token saved! Make sure to update the githubToken variable in the HTML for this to persist.");
-  }
-};
-
-window.render = renderFn;
-
-// Load data on page load
+// Initialize
 window.addEventListener("load", () => {
+  ensureRoadmapSeeded();
+  window.selectDate(new Date());
   window.loadFromGitHub();
 });
 </script>
+
+</body>
+</html>
