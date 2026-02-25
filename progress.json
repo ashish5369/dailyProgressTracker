@@ -527,8 +527,8 @@
       ],
       "tasks": {
         "General Study": true,
-        "DSA Practice": false,
-        "Build Project": false
+        "DSA Practice": true,
+        "Build Project": true
       }
     }
   },
