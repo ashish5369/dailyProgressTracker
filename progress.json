@@ -1,39 +1,537 @@
 {
   "tasks": [
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false},
-    {"go": false, "dsa": false, "build": false}
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    },
+    {
+      "go": false,
+      "dsa": false,
+      "build": false
+    }
   ],
   "dsa": 0,
   "arch": 0,
-  "milestones": {"m1": false, "m2": false, "m3": false, "m4": false},
+  "milestones": {
+    "m1": false,
+    "m2": false,
+    "m3": false,
+    "m4": false
+  },
   "lastActive": null,
-  "streak": 0
+  "streak": 0,
+  "data": {
+    "2026-02-25": {
+      "topics": [
+        "Variables, Types, Setup",
+        "Big O, Complexity",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Variables, Types, Setup": false,
+        "Big O, Complexity": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-02-26": {
+      "topics": [
+        "Arrays & Slices",
+        "Arrays Pattern",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Arrays & Slices": false,
+        "Arrays Pattern": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-02-27": {
+      "topics": [
+        "Maps & Strings",
+        "Hashing",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Maps & Strings": false,
+        "Hashing": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-02-28": {
+      "topics": [
+        "Functions & Error Handling",
+        "Sliding Window",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Functions & Error Handling": false,
+        "Sliding Window": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-03-01": {
+      "topics": [
+        "Structs & Methods",
+        "Two Pointers",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Structs & Methods": false,
+        "Two Pointers": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-03-02": {
+      "topics": [
+        "Pointers & Memory",
+        "Recursion",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Pointers & Memory": false,
+        "Recursion": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-03-03": {
+      "topics": [
+        "Revision",
+        "Revision",
+        "CLI Task Manager"
+      ],
+      "tasks": {
+        "Revision": false,
+        "CLI Task Manager": false
+      }
+    },
+    "2026-03-04": {
+      "topics": [
+        "Goroutines",
+        "Linked List Basics",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Goroutines": false,
+        "Linked List Basics": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-03-05": {
+      "topics": [
+        "Channels & Select",
+        "Fast & Slow Pointers",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Channels & Select": false,
+        "Fast & Slow Pointers": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-03-06": {
+      "topics": [
+        "Mutex & Sync",
+        "Stack",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Mutex & Sync": false,
+        "Stack": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-03-07": {
+      "topics": [
+        "Interfaces & Queues",
+        "Binary Search",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Interfaces & Queues": false,
+        "Binary Search": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-03-08": {
+      "topics": [
+        "Error Wrapping & Logging",
+        "Monotonic Stack",
+        "Problem Solving"
+      ],
+      "tasks": {
+        "Error Wrapping & Logging": false,
+        "Monotonic Stack": false,
+        "Problem Solving": false
+      }
+    },
+    "2026-03-09": {
+      "topics": [
+        "Concurrency Project",
+        "Pattern Review",
+        "Concurrent File Processor"
+      ],
+      "tasks": {
+        "Concurrency Project": false,
+        "Pattern Review": false,
+        "Concurrent File Processor": false
+      }
+    },
+    "2026-03-10": {
+      "topics": [
+        "Revision",
+        "Revision",
+        "Revision"
+      ],
+      "tasks": {
+        "Revision": false
+      }
+    },
+    "2026-03-11": {
+      "topics": [
+        "HTTP Deep Dive",
+        "REST Principles",
+        "Study"
+      ],
+      "tasks": {
+        "HTTP Deep Dive": false,
+        "REST Principles": false,
+        "Study": false
+      }
+    },
+    "2026-03-12": {
+      "topics": [
+        "Basic HTTP Server (net/http)",
+        "Middleware",
+        "Build In-Memory Server"
+      ],
+      "tasks": {
+        "Basic HTTP Server (net/http)": false,
+        "Middleware": false,
+        "Build In-Memory Server": false
+      }
+    },
+    "2026-03-13": {
+      "topics": [
+        "Gin Framework",
+        "Routing, Binding",
+        "CRUD API (in-memory)"
+      ],
+      "tasks": {
+        "Gin Framework": false,
+        "Routing, Binding": false,
+        "CRUD API (in-memory)": false
+      }
+    },
+    "2026-03-14": {
+      "topics": [
+        "PostgreSQL Basics",
+        "ACID, Indexes",
+        "DB Setup & Study"
+      ],
+      "tasks": {
+        "PostgreSQL Basics": false,
+        "ACID, Indexes": false,
+        "DB Setup & Study": false
+      }
+    },
+    "2026-03-15": {
+      "topics": [
+        "Go + Postgres",
+        "Repository Pattern",
+        "Integrate DB into API"
+      ],
+      "tasks": {
+        "Go + Postgres": false,
+        "Repository Pattern": false,
+        "Integrate DB into API": false
+      }
+    },
+    "2026-03-16": {
+      "topics": [
+        "Authentication",
+        "JWT, Hashing",
+        "Build Auth System"
+      ],
+      "tasks": {
+        "Authentication": false,
+        "JWT, Hashing": false,
+        "Build Auth System": false
+      }
+    },
+    "2026-03-17": {
+      "topics": [
+        "Clean Architecture",
+        "SOLID",
+        "Refactor Project"
+      ],
+      "tasks": {
+        "Clean Architecture": false,
+        "SOLID": false,
+        "Refactor Project": false
+      }
+    },
+    "2026-03-18": {
+      "topics": [
+        "Redis Caching",
+        "TTL, Eviction",
+        "Add Cache to API"
+      ],
+      "tasks": {
+        "Redis Caching": false,
+        "TTL, Eviction": false,
+        "Add Cache to API": false
+      }
+    },
+    "2026-03-19": {
+      "topics": [
+        "Docker & Docker Compose",
+        "Containerization",
+        "Dockerize Full Stack"
+      ],
+      "tasks": {
+        "Docker & Docker Compose": false,
+        "Containerization": false,
+        "Dockerize Full Stack": false
+      }
+    },
+    "2026-03-20": {
+      "topics": [
+        "System Design Basics",
+        "Scaling, CAP Theorem",
+        "Design for 1M Users"
+      ],
+      "tasks": {
+        "System Design Basics": false,
+        "Scaling, CAP Theorem": false,
+        "Design for 1M Users": false
+      }
+    },
+    "2026-03-21": {
+      "topics": [
+        "Message Queues",
+        "Kafka vs RabbitMQ",
+        "Async Architecture Design"
+      ],
+      "tasks": {
+        "Message Queues": false,
+        "Kafka vs RabbitMQ": false,
+        "Async Architecture Design": false
+      }
+    },
+    "2026-03-22": {
+      "topics": [
+        "Rate Limiting",
+        "Redis Implementation",
+        "Implement Rate Limiter"
+      ],
+      "tasks": {
+        "Rate Limiting": false,
+        "Redis Implementation": false,
+        "Implement Rate Limiter": false
+      }
+    },
+    "2026-03-23": {
+      "topics": [
+        "Logging & Monitoring",
+        "Observability",
+        "Study"
+      ],
+      "tasks": {
+        "Logging & Monitoring": false,
+        "Observability": false,
+        "Study": false
+      }
+    },
+    "2026-03-24": {
+      "topics": [
+        "Scalable System Redesign",
+        "Architecture Diagram",
+        "Draw Full Architecture"
+      ],
+      "tasks": {
+        "Scalable System Redesign": false,
+        "Architecture Diagram": false,
+        "Draw Full Architecture": false
+      }
+    },
+    "2026-03-25": {
+      "topics": [
+        "Mock System Design Interview",
+        "Common Problems",
+        "Design URL Shortener"
+      ],
+      "tasks": {
+        "Mock System Design Interview": false,
+        "Common Problems": false,
+        "Design URL Shortener": false
+      }
+    },
+    "2026-03-26": {
+      "topics": [
+        "Full Revision",
+        "Project Polish",
+        "Final Review"
+      ],
+      "tasks": {
+        "Full Revision": false,
+        "Project Polish": false,
+        "Final Review": false
+      }
+    },
+    "2026-03-27": {
+      "topics": [
+        "General Study",
+        "DSA Practice",
+        "Build Project"
+      ],
+      "tasks": {
+        "General Study": true,
+        "DSA Practice": false,
+        "Build Project": false
+      }
+    }
+  },
+  "roadmapStart": "2026-02-25",
+  "selectedDateKey": "2026-03-27"
 }
