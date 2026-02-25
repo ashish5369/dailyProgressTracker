@@ -19,7 +19,7 @@ After deployment completes:
 - Add new variable:
   ```
   Name:  GITHUB_TOKEN
-  Value: github_pat_11AVI3EVA0DA4vyf1t20m3_iueblJFz1EfHiZqWYdDLb6kcX7ja9ZDtyc2K7sgz4fQ0Cc66N5
+  Value: <paste your GitHub Personal Access Token here>
   ```
 - Check all environments (Production, Preview, Development)
 - Click **Save**
