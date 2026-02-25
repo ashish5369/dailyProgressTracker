@@ -538,6 +538,19 @@ let appState = {
   selectedDateKey: null
 };
 
+const normalizeAppState = () => {
+  if (!appState || typeof appState !== "object") {
+    appState = {};
+  }
+  if (!appState.data || typeof appState.data !== "object") {
+    appState.data = {};
+  }
+  if (typeof appState.streak !== "number") appState.streak = 0;
+  if (!appState.lastActive) appState.lastActive = null;
+  if (!appState.roadmapStart) appState.roadmapStart = null;
+  if (!appState.selectedDateKey) appState.selectedDateKey = null;
+};
+
 let currentDate = new Date();
 let currentViewMonth = new Date();
 let saveTimer = null;
@@ -562,6 +575,7 @@ const getRoadmapIndex = (dateKey) => {
 };
 
 const ensureRoadmapSeeded = () => {
+  normalizeAppState();
   if (!appState.roadmapStart) {
     appState.roadmapStart = getTodayKey();
   }
@@ -585,6 +599,7 @@ const ensureRoadmapSeeded = () => {
 };
 
 const initializeDate = (dateKey) => {
+  normalizeAppState();
   if (appState.data[dateKey]) return;
 
   const roadmapIndex = getRoadmapIndex(dateKey);
