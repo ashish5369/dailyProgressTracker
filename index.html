@@ -530,11 +530,13 @@ let appState = {
   data: {},
   streak: 0,
   lastActive: null,
-  roadmapStart: null
+  roadmapStart: null,
+  selectedDateKey: null
 };
 
 let currentDate = new Date();
 let currentViewMonth = new Date();
+let saveTimer = null;
 
 const getDateKey = (date) => {
   const year = date.getFullYear();
@@ -644,6 +646,7 @@ const renderCalendar = () => {
 window.selectDate = (date) => {
   currentDate = new Date(date);
   initializeDate(getDateKey(currentDate));
+  appState.selectedDateKey = getDateKey(currentDate);
   const formattedDate = currentDate.toLocaleDateString('en-US', {
     weekday: 'short',
     year: 'numeric',
@@ -697,6 +700,7 @@ window.toggleTask = (topic) => {
   const dateKey = getDateKey(currentDate);
   appState.data[dateKey].tasks[topic] = !appState.data[dateKey].tasks[topic];
   updateStats();
+  scheduleSave();
 };
 
 window.addTopic = () => {
@@ -709,7 +713,7 @@ window.addTopic = () => {
     appState.data[dateKey].tasks[topic] = false;
     input.value = "";
     renderTopics();
-    window.save();
+    scheduleSave();
   }
 };
 
@@ -719,7 +723,7 @@ window.removeTopic = (idx) => {
   appState.data[dateKey].topics.splice(idx, 1);
   delete appState.data[dateKey].tasks[topic];
   renderTopics();
-  window.save();
+  scheduleSave();
 };
 
 const updateStats = () => {
@@ -763,6 +767,20 @@ const updateStats = () => {
 };
 
 window.loadFromGitHub = async () => {
+  const localFallback = () => {
+    const cached = localStorage.getItem("progress_backup");
+    if (cached) {
+      try {
+        appState = JSON.parse(cached);
+      } catch (e) {
+        // ignore malformed cache
+      }
+    }
+    ensureRoadmapSeeded();
+    const dateKey = appState.selectedDateKey || getTodayKey();
+    window.selectDate(new Date(dateKey + "T00:00:00"));
+  };
+
   try {
     const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.file}`;
     const response = await fetch(url, {
@@ -774,15 +792,19 @@ window.loadFromGitHub = async () => {
       const content = JSON.parse(atob(data.content));
       appState = content;
       ensureRoadmapSeeded();
-      selectDate(new Date());
+      const dateKey = appState.selectedDateKey || getTodayKey();
+      window.selectDate(new Date(dateKey + "T00:00:00"));
       alert("✅ Data loaded from GitHub!");
+      return;
     }
+    localFallback();
   } catch (e) {
     console.log("Could not load from GitHub:", e.message);
+    localFallback();
   }
 };
 
-window.save = async () => {
+const saveProgress = async (silent) => {
   try {
     const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.file}`;
     
@@ -819,17 +841,31 @@ window.save = async () => {
 
     if (response.ok) {
       console.log("Progress saved to GitHub!");
-      alert("✅ Progress saved to GitHub!");
+      if (!silent) {
+        alert("✅ Progress saved to GitHub!");
+      }
+      localStorage.setItem("progress_backup", JSON.stringify(appState));
     }
   } catch (e) {
-    alert(`Error: ${e.message}`);
+    if (!silent) {
+      alert(`Error: ${e.message}`);
+    }
   }
 };
 
+const scheduleSave = () => {
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+  }
+  saveTimer = setTimeout(() => {
+    saveProgress(true);
+  }, 800);
+};
+
+window.save = () => saveProgress(false);
+
 // Initialize
 window.addEventListener("load", () => {
-  ensureRoadmapSeeded();
-  window.selectDate(new Date());
   window.loadFromGitHub();
 });
 </script>
