@@ -767,7 +767,7 @@ const updateStats = () => {
 };
 
 window.loadFromGitHub = async () => {
-  const localFallback = () => {
+  const localFallback = async (fileNotFound = false) => {
     const cached = localStorage.getItem("progress_backup");
     if (cached) {
       try {
@@ -779,6 +779,12 @@ window.loadFromGitHub = async () => {
     ensureRoadmapSeeded();
     const dateKey = appState.selectedDateKey || getTodayKey();
     window.selectDate(new Date(dateKey + "T00:00:00"));
+    
+    // If file doesn't exist in GitHub, create it
+    if (fileNotFound && githubToken) {
+      console.log("Creating initial progress.json in GitHub...");
+      await saveProgress(true);
+    }
   };
 
   try {
@@ -800,11 +806,15 @@ window.loadFromGitHub = async () => {
       window.selectDate(new Date(dateKey + "T00:00:00"));
       alert("✅ Data loaded from GitHub!");
       return;
+    } else if (response.status === 404) {
+      console.log("File not found (404), will create it");
+      await localFallback(true);
+      return;
     }
-    localFallback();
+    await localFallback();
   } catch (e) {
     console.log("Could not load from GitHub:", e.message);
-    localFallback();
+    await localFallback();
   }
 };
 
