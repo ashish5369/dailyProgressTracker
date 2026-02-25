@@ -1,0 +1,15 @@
+# Keep token secure
+config.js
+.env
+.env.local
+
+# Node modules
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
+

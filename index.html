@@ -484,6 +484,9 @@ header h1 {
 </div>
 
 <script type="module">
+// Token is stored securely in Vercel environment variables
+const PROXY_API_URL = '/api/github-proxy';
+
 const GITHUB_CONFIG = {
   owner: "ashish5369",
   repo: "dailyProgressTracker",
@@ -491,7 +494,8 @@ const GITHUB_CONFIG = {
   branch: "main"
 };
 
-let githubToken = "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";
+// Token is now stored securely in Vercel environment variables
+let githubToken = null; // Not needed - proxy handles auth
 
 const ROADMAP = [
   ["Variables, Types, Setup", "Big O, Complexity", "Problem Solving"],
@@ -781,20 +785,16 @@ window.loadFromGitHub = async () => {
     window.selectDate(new Date(dateKey + "T00:00:00"));
     
     // If file doesn't exist in GitHub, create it
-    if (fileNotFound && githubToken) {
+    if (fileNotFound) {
       console.log("Creating initial progress.json in GitHub...");
       await saveProgress(true);
     }
   };
 
   try {
-    const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.file}`;
+    const url = `${PROXY_API_URL}?owner=${GITHUB_CONFIG.owner}&repo=${GITHUB_CONFIG.repo}&file=${GITHUB_CONFIG.file}`;
     const response = await fetch(url, {
-      headers: githubToken ? {
-        "Authorization": `Bearer ${githubToken}`,
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28"
-      } : {}
+      method: 'GET'
     });
     
     if (response.ok) {
@@ -820,16 +820,12 @@ window.loadFromGitHub = async () => {
 
 const saveProgress = async (silent) => {
   try {
-    const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.file}`;
+    const url = `${PROXY_API_URL}?owner=${GITHUB_CONFIG.owner}&repo=${GITHUB_CONFIG.repo}&file=${GITHUB_CONFIG.file}`;
     
     let sha = null;
     try {
       const getResponse = await fetch(url, {
-        headers: {
-          "Authorization": `Bearer ${githubToken}`,
-          "Accept": "application/vnd.github+json",
-          "X-GitHub-Api-Version": "2022-11-28"
-        }
+        method: 'GET'
       });
       if (getResponse.ok) {
         const fileData = await getResponse.json();
@@ -851,9 +847,6 @@ const saveProgress = async (silent) => {
     const response = await fetch(url, {
       method: "PUT",
       headers: {
-        "Authorization": `Bearer ${githubToken}`,
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
         "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
