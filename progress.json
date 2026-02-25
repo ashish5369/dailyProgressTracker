@@ -526,9 +526,9 @@
         "Build Project"
       ],
       "tasks": {
-        "General Study": true,
-        "DSA Practice": true,
-        "Build Project": true
+        "General Study": false,
+        "DSA Practice": false,
+        "Build Project": false
       }
     }
   },
